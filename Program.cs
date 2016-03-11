@@ -1,5 +1,4 @@
-﻿using System;
-using System.DirectoryServices.AccountManagement;
+﻿using System.DirectoryServices.AccountManagement;
 using System.Linq;
 using Microsoft.Exchange.WebServices.Data;
 
@@ -15,10 +14,11 @@ namespace MarkExchangeItemsAsRead
 
             FolderView folderView = new FolderView(inbox.ChildFolderCount);
             folderView.PropertySet = new PropertySet(BasePropertySet.IdOnly, FolderSchema.DisplayName, FolderSchema.ChildFolderCount);
-            SearchFilter filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, "Notifications");
 
-            Folder folder = inbox.FindFolders(filter, folderView).First();
-            MarkAllAsRead(folder);
+            foreach(Folder folder in inbox.FindFolders(folderView))
+            {
+                MarkAllAsRead(folder);
+            }
         }
 
         static void MarkAllAsRead(Folder folder)
