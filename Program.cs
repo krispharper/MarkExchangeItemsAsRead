@@ -10,15 +10,11 @@ namespace MarkExchangeItemsAsRead
         {
             ExchangeService service = new ExchangeService(ExchangeVersion.Exchange2007_SP1);
             service.AutodiscoverUrl(UserPrincipal.Current.EmailAddress);
-            Folder inbox = Folder.Bind(service, WellKnownFolderName.Inbox);
-
-            FolderView folderView = new FolderView(inbox.ChildFolderCount);
-            folderView.PropertySet = new PropertySet(BasePropertySet.IdOnly, FolderSchema.DisplayName, FolderSchema.ChildFolderCount);
-
-            foreach(Folder folder in inbox.FindFolders(folderView))
-            {
-                MarkAllAsRead(folder);
-            }
+            Folder root = Folder.Bind(service, WellKnownFolderName.MsgFolderRoot);
+            FolderView folderView = new FolderView(10);
+            SearchFilter filter = new SearchFilter.IsEqualTo(FolderSchema.DisplayName, "Archived");
+            FindFoldersResults results = service.FindFolders(WellKnownFolderName.MsgFolderRoot, filter, folderView);
+            MarkAllAsRead(results.First());
         }
 
         static void MarkAllAsRead(Folder folder)
